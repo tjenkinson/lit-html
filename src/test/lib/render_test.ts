@@ -313,6 +313,17 @@ suite('render()', () => {
           stripExpressionMarkers(container.innerHTML), '<div foo="bar"></div>');
     });
 
+    test('renders to a namespaced attribute', () => {
+      render(html`<svg><use xlink:href="${'bar.svg'}"></use></svg>`, container);
+      const svgElement = container.firstElementChild!;
+      const useElement = svgElement.firstElementChild!;
+      assert.equal(useElement.tagName, 'use');
+      const attr = useElement.attributes[0];
+      assert.equal(attr.name, 'href');
+      assert.equal(attr.namespaceURI, 'xlink');
+      assert.equal(attr.value, 'bar.svg');
+    });
+
     testIfHasSymbol('renders a Symbol to an attribute', () => {
       render(html`<div foo=${Symbol('A')}></div>`, container);
       assert.include(
@@ -536,6 +547,18 @@ suite('render()', () => {
       render(t(undefined), container);
       assert.equal(stripExpressionMarkers(container.innerHTML), '<div></div>');
     });
+
+    test('renders to a namespaced attribute', () => {
+      render(html`<svg><use ?xlink:href="${true}"></use></svg>`, container);
+      const svgElement = container.firstElementChild!;
+      const useElement = svgElement.firstElementChild!;
+      assert.equal(useElement.tagName, 'use');
+      const attr = useElement.attributes[0];
+      assert.equal(attr.name, 'href');
+      assert.equal(attr.namespaceURI, 'xlink');
+      assert.equal(attr.value, '');
+    });
+
   });
 
   suite('events', () => {

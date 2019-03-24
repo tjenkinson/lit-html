@@ -45,13 +45,21 @@ export const isIterable = (value: unknown): value is Iterable<unknown> => {
 export class AttributeCommitter {
   element: Element;
   name: string;
+  namespace: string|null;
   strings: string[];
   parts: AttributePart[];
   dirty = true;
 
   constructor(element: Element, name: string, strings: string[]) {
     this.element = element;
-    this.name = name;
+    if (name.indexOf(':') > 0) {
+      const nameParts = name.split(':');
+      this.namespace = nameParts[0];
+      this.name = nameParts[1];
+    } else {
+      this.name = name;
+      this.namespace = null;
+    }
     this.strings = strings;
     this.parts = [];
     for (let i = 0; i < strings.length - 1; i++) {
@@ -93,7 +101,8 @@ export class AttributeCommitter {
   commit(): void {
     if (this.dirty) {
       this.dirty = false;
-      this.element.setAttribute(this.name, this._getValue() as string);
+      this.element.setAttributeNS(
+          this.namespace, this.name, this._getValue() as string);
     }
   }
 }
@@ -341,7 +350,7 @@ export class NodePart implements Part {
 export class BooleanAttributePart implements Part {
   element: Element;
   name: string;
-  strings: string[];
+  namespace: string|null;
   value: unknown = undefined;
   _pendingValue: unknown = undefined;
 
@@ -351,8 +360,14 @@ export class BooleanAttributePart implements Part {
           'Boolean attributes can only contain a single expression');
     }
     this.element = element;
-    this.name = name;
-    this.strings = strings;
+    if (name.indexOf(':') > 0) {
+      const nameParts = name.split(':');
+      this.namespace = nameParts[0];
+      this.name = nameParts[1];
+    } else {
+      this.name = name;
+      this.namespace = null;
+    }
   }
 
   setValue(value: unknown): void {
@@ -371,9 +386,9 @@ export class BooleanAttributePart implements Part {
     const value = !!this._pendingValue;
     if (this.value !== value) {
       if (value) {
-        this.element.setAttribute(this.name, '');
+        this.element.setAttributeNS(this.namespace, this.name, '');
       } else {
-        this.element.removeAttribute(this.name);
+        this.element.removeAttributeNS(this.namespace, this.name);
       }
     }
     this.value = value;
