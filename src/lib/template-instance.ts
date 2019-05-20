@@ -16,7 +16,7 @@
  * @module lit-html
  */
 
-import {isCEPolyfill, elementCommentTextWalker, resetElementCommentTextWalker} from './dom.js';
+import {elementCommentTextWalker, isCEPolyfill, resetElementCommentTextWalker} from './dom.js';
 import {Part} from './part.js';
 import {RenderOptions} from './render-options.js';
 import {TemplateProcessor} from './template-processor.js';

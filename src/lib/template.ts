@@ -16,8 +16,8 @@
  * @module lit-html
  */
 
-import {TemplateResult} from './template-result.js';
 import {elementCommentTextWalker, resetElementCommentTextWalker} from './dom.js';
+import {TemplateResult} from './template-result.js';
 
 /**
  * An expression marker with embedded unique key to avoid collision with
